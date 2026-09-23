@@ -1,0 +1,35 @@
+name: Comment on PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      comment:
+        description: 'The comment text to post'
+        required: true
+        type: string
+      repo:
+        description: 'Repository in "owner/repo" format (e.g., port-labs/puddle-integrations)'
+        required: true
+        type: string
+      pr:
+        description: 'Pull request number'
+        required: true
+        type: string
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment on PR using PAT
+        env:
+          GITHUB_TOKEN: ${{ secrets.PORT_GITHUB_TOKEN }}
+          COMMENT: ${{ github.event.inputs.comment }}
+          REPO: ${{ github.event.inputs.repo }}
+          PR_NUMBER: ${{ github.event.inputs.pr }}
+        run: |
+          # Split repo into owner and name
+          OWNER=$(echo "$REPO" | cut -d'/' -f1)
+          REPO_NAME=$(echo "$REPO" | cut -d'/' -f2)
+
+          # Post comment to PR using GitHub CLI
+          echo "$COMMENT" | gh pr comment "$PR_NUMBER" --repo "$OWNER/$REPO_NAME" --body-file -
