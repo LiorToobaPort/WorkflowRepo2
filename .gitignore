@@ -1,2 +1,6 @@
 bin
 vendor
+
+# Terraform
+.terraform/
+*.tfplan
